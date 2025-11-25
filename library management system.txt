@@ -1,0 +1,180 @@
+import json
+
+class Library:
+    def __init__(self):
+        self.books = set()                     # store unique book titles
+        self.issued_books = {}                 # {student_name: book_title}
+        self.issue_file = "issued_books.txt"   # file to save issued book data
+
+    # Add new book
+    def add_book(self, title):
+        self.books.add(title)
+        print(f"Book '{title}' added successfully!\n")
+
+    # Display available books
+    def display_books(self):
+        if not self.books:
+            print("No books available.\n")
+        else:
+            print("Available Books:")
+            for book in self.books:
+                print(" -", book)
+            print()
+
+    # Issue book to student
+    def issue_book(self, student, title):
+        try:
+            if title not in self.books:
+                raise ValueError("Book not available in library!")
+
+            if title in self.issued_books.values():
+                raise ValueError("Book already issued to someone!")
+
+            self.issued_books[student] = title
+            self.books.remove(title)
+            print(f"Book '{title}' issued to {student}\n")
+            self.save_issue_data()
+
+        except ValueError as e:
+            print("Error:", e, "\n")
+
+    # Return book from student
+    def return_book(self, student):
+        try:
+            if student not in self.issued_books:
+                raise ValueError("This student has no issued book!")
+
+            book = self.issued_books.pop(student)
+            self.books.add(book)
+            print(f"Book '{book}' returned by {student}\n")
+            self.save_issue_data()
+
+        except ValueError as e:
+            print("Error:", e, "\n")
+
+    # Save issued book data to file
+    def save_issue_data(self):
+        with open(self.issue_file, "w") as f:
+            json.dump(self.issued_books, f)
+        print("Issued book data saved to file.\n")
+
+    # Show issued book list
+    def show_issued(self):
+        if not self.issued_books:
+            print("No books are currently issued.\n")
+        else:
+            print("Issued Books:")
+            for student, book in self.issued_books.items():
+                print(f" - {student} → {book}")
+            print()
+
+
+# =======================
+# Main Program (Menu)
+# =======================
+
+library = Library()
+
+while True:
+    print("=== LIBRARY MANAGEMENT SYSTEM ===")
+    print("1. Add Book")
+    print("2. Display Books")
+    print("3. Issue Book")
+    print("4. Return Book")
+    print("5. Show Issued Books")
+    print("6. Exit")
+
+    choice = input("Enter your choice: ")
+
+    if choice == "1":
+        title = input("Enter book title: ")
+        library.add_book(title)
+
+    elif choice == "2":
+        library.display_books()
+
+    elif choice == "3":
+        student = input("Enter student name: ")
+        title = input("Enter book title to issue: ")
+        library.issue_book(student, title)
+
+    elif choice == "4":
+        student = input("Enter student name to return book: ")
+        library.return_book(student)
+
+    elif choice == "5":
+        library.show_issued()
+
+    elif choice == "6":
+        print("Exiting program...")
+        break
+
+    else:
+        print("Invalid choice! Try again.\n")
+
+
+
+
+OUTPUT:
+
+ADD BOOKS:
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+1. Add Book
+2. Display Books
+3. Issue Book
+4. Return Book
+5. Show Issued Books
+6. Exit
+Enter your choice: 1
+Enter book title: Python Programming
+Book 'Python Programming' added successfully!
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+1. Add Book
+2. Display Books
+3. Issue Book
+4. Return Book
+5. Show Issued Books
+6. Exit
+Enter your choice: 1
+Enter book title: Data Science Guide
+Book 'Data Science Guide' added successfully!
+
+ISSUE BOOKS & RETURN BOOKS:
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+Enter your choice: 2
+Available Books:
+ - Python Programming
+ - Data Science Guide
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+Enter your choice: 3
+Enter student name: Rahul
+Enter book title to issue: Python Programming
+Book 'Python Programming' issued to Rahul
+Issued book data saved to file.
+
+DISPLAY BOOKS:
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+Enter your choice: 5
+Issued Books:
+ - Rahul → Python Programming
+
+FILE SAVE AS ISSUE BOOK:
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+Enter your choice: 4
+Enter student name to return book: Rahul
+Book 'Python Programming' returned by Rahul
+Issued book data saved to file.
+
+EXIT:
+
+=== LIBRARY MANAGEMENT SYSTEM ===
+Enter your choice: 6
+Exiting program...
+
+
