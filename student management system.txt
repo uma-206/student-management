@@ -1,0 +1,215 @@
+import os
+import json
+
+FILE_NAME = "students.txt"
+
+class StudentManagementSystem:
+    def __init__(self):
+        self.students = self.load_students()
+
+    # Load data from file
+    def load_students(self):
+        if not os.path.exists(FILE_NAME):
+            return {}
+        try:
+            with open(FILE_NAME, "r") as file:
+                return json.load(file)
+        except Exception:
+            return {}
+
+    # Save data to file
+    def save_students(self):
+        with open(FILE_NAME, "w") as file:
+            json.dump(self.students, file, indent=4)
+
+    # Add new student
+    def add_student(self):
+        try:
+            roll = input("Enter Roll Number: ")
+            if roll in self.students:
+                print("Student already exists!")
+                return
+
+            name = input("Enter Student Name: ")
+            course = input("Enter Course: ")
+            marks = float(input("Enter Marks: "))
+
+            self.students[roll] = {
+                "name": name,
+                "course": course,
+                "marks": marks
+            }
+            self.save_students()
+            print("Student Added Successfully!")
+        except Exception:
+            print("Invalid input! Please try again.")
+
+    # View all students
+    def view_all_students(self):
+        if not self.students:
+            print("No student data available.")
+            return
+        for roll, details in self.students.items():
+            print(f"Roll: {roll}, Name: {details['name']}, Course: {details['course']}, Marks: {details['marks']}")
+
+    # Search student
+    def search_student(self):
+        roll = input("Enter Roll Number: ")
+        if roll in self.students:
+            print("Student Found:", self.students[roll])
+        else:
+            print("No student found with this roll number.")
+
+    # Update student
+    def update_student(self):
+        roll = input("Enter Roll Number: ")
+        if roll not in self.students:
+            print("Student not found!")
+            return
+
+        try:
+            print("Leave blank to keep previous value.")
+            name = input("Enter New Name: ") or self.students[roll]["name"]
+            course = input("Enter New Course: ") or self.students[roll]["course"]
+            marks_input = input("Enter New Marks: ")
+
+            marks = float(marks_input) if marks_input else self.students[roll]["marks"]
+
+            self.students[roll] = {"name": name, "course": course, "marks": marks}
+            self.save_students()
+            print("Student Updated Successfully!")
+        except Exception:
+            print("Error updating student!")
+
+    # Delete student
+    def delete_student(self):
+        roll = input("Enter Roll Number: ")
+        if roll in self.students:
+            del self.students[roll]
+            self.save_students()
+            print("Student Deleted Successfully!")
+        else:
+            print("Student not found!")
+
+    # Find topper
+    def find_topper(self):
+        if not self.students:
+            print("No student records available.")
+            return
+
+        topper_roll = max(self.students, key=lambda r: self.students[r]["marks"])
+        topper = self.students[topper_roll]
+
+        print("\n🏆 TOPPER DETAILS 🏆")
+        print(f"Roll: {topper_roll}")
+        print(f"Name: {topper['name']}")
+        print(f"Course: {topper['course']}")
+        print(f"Marks: {topper['marks']}\n")
+
+
+# MAIN PROGRAM
+sms = StudentManagementSystem()
+
+while True:
+    print("\n===== STUDENT MANAGEMENT SYSTEM =====")
+    print("1. Add New Student")
+    print("2. View All Students")
+    print("3. Search Student")
+    print("4. Update Student")
+    print("5. Delete Student")
+    print("6. Calculate Topper")
+    print("7. Exit")
+
+    choice = input("Enter Your Choice: ")
+
+    if choice == "1":
+        sms.add_student()
+    elif choice == "2":
+        sms.view_all_students()
+    elif choice == "3":
+        sms.search_student()
+    elif choice == "4":
+        sms.update_student()
+    elif choice == "5":
+        sms.delete_student()
+    elif choice == "6":
+        sms.find_topper()
+    elif choice == "7":
+        print("Exiting Program...")
+        break
+    else:
+        print("Invalid choice! Please enter a valid option.")
+
+
+output:
+
+
+Adding new student:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+1. Add New Student
+2. View All Students
+3. Search Student
+4. Update Student
+5. Delete Student
+6. Calculate Topper
+7. Exit
+Enter Your Choice: 1
+
+Enter Roll Number: 101
+Enter Student Name: Rahul
+Enter Course: BCA
+Enter Marks: 88
+Student Added Successfully!
+
+view all student:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 2
+
+Roll: 101, Name: Rahul, Course: BCA, Marks: 88.0
+Roll: 102, Name: Anusha, Course: BSc, Marks: 93.0
+
+
+search students:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 3
+
+Enter Roll Number: 101
+Student Found: {'name': 'Rahul', 'course': 'BCA', 'marks': 88.0}
+
+update student:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 4
+
+Enter Roll Number: 101
+Leave blank to keep previous value.
+Enter New Name: Rahul R
+Enter New Course: 
+Enter New Marks: 90
+Student Updated Successfully!
+
+Delete student:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 5
+
+Enter Roll Number: 102
+Student Deleted Successfully!
+
+Calculate topper:
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 6
+
+🏆 TOPPER DETAILS 🏆
+Roll: 101
+Name: Rahul R
+Course: BCA
+Marks: 90.0
+
+===== STUDENT MANAGEMENT SYSTEM =====
+Enter Your Choice: 7
+Exiting Program...
